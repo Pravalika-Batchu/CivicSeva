@@ -1,0 +1,119 @@
+/* Officer Statistics Styling */
+.statistics-header {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: #1a3c34;
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.statistics-header::after {
+    content: '';
+    width: 120px;
+    height: 5px;
+    background: linear-gradient(90deg, #00c4cc, #007bff);
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+
+/* List Group Styling */
+.list-group {
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+}
+
+.list-group-item {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+    transition: background 0.3s ease;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.list-group-item:hover {
+    background: #f1f3f5;
+}
+
+.list-group-item span.fw-bold {
+    font-weight: 600;
+}
+
+.text-primary {
+    color: #007bff !important;
+}
+
+.text-success {
+    color: #28a745 !important;
+}
+
+.text-warning {
+    color: #ffc107 !important;
+}
+
+.text-info {
+    color: #17a2b8 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-secondary {
+    color: #6c757d !important;
+}
+
+/* Chart Container */
+.chart-container {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    max-height: 400px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .statistics-header {
+        font-size: 2.25rem;
+    }
+
+    .list-group-item {
+        font-size: 0.95rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .chart-container {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .statistics-header {
+        font-size: 2rem;
+    }
+
+    .list-group-item {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .chart-container {
+        padding: 0.75rem;
+        max-height: 300px;
+    }
+
+    .row.mb-4 {
+        margin-bottom: 2rem !important;
+    }
+}

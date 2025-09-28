@@ -1,0 +1,152 @@
+/* IssueDetail.css */
+.issue-detail-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #f5f7fa;
+    font-family: 'Inter', sans-serif;
+}
+
+.issue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.issue-header h1 {
+    font-size: 2rem;
+    color: #1e3a8a;
+    margin: 0;
+}
+
+.issue-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.issue-section {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.issue-section h2 {
+    font-size: 1.5rem;
+    color: #1e3a8a;
+    margin-bottom: 1rem;
+}
+
+.issue-section p {
+    font-size: 1rem;
+    color: #374151;
+    margin-bottom: 0.75rem;
+}
+
+.severity {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+}
+
+.severity.high {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.severity.medium {
+    background: #ffedd5;
+    color: #f97316;
+}
+
+.severity.low {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.issue-image {
+    max-width: 100%;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2563eb;
+}
+
+.btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+}
+
+.loading,
+.error {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.loading .spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 4px solid #3b82f6;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.error p {
+    color: #dc2626;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .issue-detail-container {
+        padding: 1rem;
+    }
+
+    .issue-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .issue-section h2 {
+        font-size: 1.25rem;
+    }
+
+    .issue-section p {
+        font-size: 0.95rem;
+    }
+}
