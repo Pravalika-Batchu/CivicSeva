@@ -91,7 +91,7 @@ DATABASE_URL=your_database_url
 
 ---
 
-## 📸 Screenshots (Optional)
+## 📸 Screenshots
 
 ![Demo logo](/homepage.png)
 
