@@ -23,7 +23,7 @@ Citizens often face civic problems such as uncollected garbage, broken roads, wa
 
 - **Frontend**: React.js  
 - **Backend**: Django (Python)  
-- **Database**: PostgreSQL / MySQL  
+- **Database**: PostgreSQL
 - **Version Control**: Git & GitHub  
 
 ---
@@ -96,12 +96,6 @@ DATABASE_URL=your_database_url
 ![Demo logo](/homepage.png)
 
 
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
----
 
 ## 👩‍💻 Authors
 
