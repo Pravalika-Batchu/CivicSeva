@@ -97,6 +97,3 @@ DATABASE_URL=your_database_url
 
 
 
-## 👩‍💻 Authors
-
-- **Pravalika Batchu**  
