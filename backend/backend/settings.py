@@ -22,7 +22,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-fallback-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-
+#hosts for deployment
 ALLOWED_HOSTS = ['*']
 
 # JWT settings
