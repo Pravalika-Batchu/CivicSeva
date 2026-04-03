@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -84,6 +85,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3001',
     'http://127.0.0.1:3000',
     'http://127.0.0.1:3001',
+    'https://civicseva.netlify.app',
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ['authorization', 'content-type', 'x-csrftoken']
@@ -96,6 +98,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:3001',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:8001',
+    'https://civicseva.netlify.app',
+    'https://civicseva.onrender.com',
 ]
 CSRF_COOKIE_SAMESITE = 'None'  # Allow cross-origin cookie access
 CSRF_COOKIE_SECURE = True  # Use with HTTPS in production
@@ -127,15 +131,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'swasthgram_db'),
-        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'batchu123'),
-        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
-    }
+    'default': dj_database_url.config(
+        default=f"postgres://{os.environ.get('POSTGRES_USER', 'postgres')}:{os.environ.get('POSTGRES_PASSWORD', 'batchu123')}@{os.environ.get('POSTGRES_HOST', 'localhost')}:{os.environ.get('POSTGRES_PORT', '5432')}/{os.environ.get('POSTGRES_DB', 'swasthgram_db')}",
+        conn_max_age=600,
+        ssl_require=True if os.environ.get('DATABASE_URL') else False
+    )
 }
 
 # Password validation
