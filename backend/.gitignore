@@ -23,6 +23,3 @@ ENV/
 .vscode/
 .idea/
 .DS_Store
-
-# Explicitly ignored files
-backend/settings.py
