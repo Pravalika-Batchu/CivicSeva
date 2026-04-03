@@ -132,6 +132,8 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+IS_RENDER = os.environ.get('RENDER')
+
 if os.environ.get('DATABASE_URL'):
     DATABASES = {
         'default': dj_database_url.config(
@@ -139,7 +141,11 @@ if os.environ.get('DATABASE_URL'):
             ssl_require=True
         )
     }
+elif IS_RENDER:
+    # 🛑 If on Render and missing DATABASE_URL, fail explicitly
+    raise ValueError("DATABASE_URL must be set in Render environment variables!")
 else:
+    # Local fallback
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
