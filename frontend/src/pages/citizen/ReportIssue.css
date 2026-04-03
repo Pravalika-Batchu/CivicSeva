@@ -1,0 +1,244 @@
+/* ReportIssue Styles for Civic Seva Platform */
+.report-issue-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.report-issue-header {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e88e5;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.report-issue-header::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 3px;
+    background: #ffca28;
+    margin-top: 5px;
+    transition: width 0.3s ease;
+}
+
+.report-issue-header:hover::after {
+    width: 100px;
+}
+
+.report-issue-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #333;
+}
+
+.form-control {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #1e88e5;
+    box-shadow: 0 0 5px rgba(30, 136, 229, 0.5);
+}
+
+.form-control:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.alert-success {
+    background: #e8f5e9;
+    border-color: #43a047;
+    color: #2e7d32;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.alert-danger {
+    background: #ffebee;
+    border-color: #d32f2f;
+    color: #c62828;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.map-wrapper {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    margin-bottom: 15px;
+}
+
+.leaflet-container {
+    height: 300px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+.leaflet-marker-icon {
+    display: block !important;
+    z-index: 1000;
+    width: 25px;
+    height: 41px;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    font-size: 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    transform: scale(1.05);
+}
+
+.action-btn:disabled {
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: #1e88e5;
+    border: none;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: #1565c0;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    border: none;
+    color: #ffffff;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-outline-primary {
+    border-color: #1e88e5;
+    color: #1e88e5;
+}
+
+.btn-outline-primary:hover {
+    background: #1e88e5;
+    color: #ffffff;
+}
+
+.btn-outline-success {
+    border-color: #43a047;
+    color: #43a047;
+}
+
+.btn-outline-success:hover {
+    background: #43a047;
+    color: #ffffff;
+}
+
+.predicted-severity {
+    font-size: 1rem;
+    color: #333;
+}
+
+.location-preview {
+    margin-top: 20px;
+}
+
+.location-preview h5 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e88e5;
+    margin-bottom: 10px;
+}
+
+.map-iframe {
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .report-issue-container {
+        padding: 15px;
+    }
+
+    .report-issue-header {
+        font-size: 1.8rem;
+    }
+
+    .form-control {
+        font-size: 0.95rem;
+    }
+
+    .map-wrapper {
+        height: 250px;
+    }
+
+    .leaflet-container {
+        height: 250px;
+    }
+
+    .action-btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .location-preview h5 {
+        font-size: 1.1rem;
+    }
+
+    .map-iframe {
+        height: 250px;
+    }
+}
+
+@media (max-width: 576px) {
+    .report-issue-header {
+        font-size: 1.5rem;
+    }
+
+    .form-control {
+        font-size: 0.9rem;
+    }
+
+    .action-btn {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+
+    .leaflet-marker-icon {
+        width: 20px;
+        height: 32px;
+    }
+}

@@ -1,0 +1,95 @@
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Vibrant Color Palette */
+  --primary: #0061ff;
+  --primary-hover: #004ecc;
+  --secondary: #60efff;
+  --accent: #FF0080;
+
+  --bg-light: #ffffff;
+  --bg-dark: #f0f2f5;
+  --text-main: #0a0a0a;
+  --text-muted: #505050;
+
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
+
+  --gradient-primary: linear-gradient(135deg, #0052d4 0%, #4364f7 50%, #6fb1fc 100%);
+  --gradient-accent: linear-gradient(135deg, #d81b60 0%, #ff4081 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.4));
+
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding-top: 80px;
+  /* Space for fixed navbar */
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.3s;
+}
+
+/* Global Utilities */
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-accent {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: var(--glass-border);
+  box-shadow: var(--shadow-lg);
+  border-radius: 16px;
+}
+
+.btn-primary-gradient {
+  background: var(--gradient-primary);
+  border: none;
+  color: white;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 97, 255, 0.3);
+  color: white;
+}
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}

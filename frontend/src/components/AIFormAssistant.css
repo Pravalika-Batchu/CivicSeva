@@ -1,0 +1,209 @@
+/* AIFormAssistant Styles for Civic Seva Platform */
+.ai-form-assistant-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+    margin-bottom: 20px;
+    border: 1px solid rgba(30, 136, 229, 0.2);
+    /* Debug: border for visibility */
+}
+
+.ai-form-assistant-card:hover {
+    transform: translateY(-5px);
+}
+
+.ai-form-assistant-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #1e88e5;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ai-form-assistant-title::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 3px;
+    background: #ffca28;
+    margin-top: 5px;
+    transition: width 0.3s ease;
+}
+
+.ai-form-assistant-title:hover::after {
+    width: 80px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-control {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #1e88e5;
+    box-shadow: 0 0 8px rgba(30, 136, 229, 0.3);
+}
+
+.form-control:disabled {
+    background: #f8f9fa;
+    cursor: not-allowed;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-text {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.btn {
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-icon {
+    margin-right: 8px;
+}
+
+.start-voice-btn {
+    background: #ffca28;
+    color: #333;
+    border: none;
+}
+
+.start-voice-btn.listening {
+    background: #ffb300;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+.start-voice-btn:hover {
+    background: #ffb300;
+    transform: scale(1.05);
+}
+
+.start-voice-btn:disabled {
+    background: #ffeeba;
+    cursor: not-allowed;
+}
+
+.stop-voice-btn {
+    background: #d32f2f;
+    color: #ffffff;
+    border: none;
+}
+
+.stop-voice-btn:hover {
+    background: #b71c1c;
+    transform: scale(1.05);
+}
+
+.stop-voice-btn:disabled {
+    background: #ef9a9a;
+    cursor: not-allowed;
+}
+
+.submit-voice-btn {
+    background: #43a047;
+    color: #ffffff;
+    border: none;
+}
+
+.submit-voice-btn:hover {
+    background: #2e7d32;
+    transform: scale(1.05);
+}
+
+.submit-voice-btn:disabled {
+    background: #81c784;
+    cursor: not-allowed;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ai-form-assistant-card {
+        padding: 15px;
+    }
+
+    .ai-form-assistant-title {
+        font-size: 1.4rem;
+    }
+
+    .form-control {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .ai-form-assistant-title {
+        font-size: 1.2rem;
+    }
+
+    .form-group label {
+        font-size: 0.95rem;
+    }
+
+    textarea.form-control {
+        min-height: 80px;
+    }
+
+    .form-text {
+        font-size: 0.8rem;
+    }
+}
