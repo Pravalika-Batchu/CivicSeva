@@ -23,8 +23,8 @@ RUN pip install -r requirements.txt
 # Copy project
 COPY . /app/
 
-# Expose port
+# Expose port (Render uses dynamic $PORT, but 8000 is a good default context)
 EXPOSE 8000
 
-# Run server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Run server with Gunicorn binding to Render's dynamic $PORT
+CMD ["sh", "-c", "gunicorn backend.wsgi:application --bind 0.0.0.0:${PORT:-8000}"]

@@ -12,13 +12,12 @@ from django.shortcuts import redirect
 
 from django.http import JsonResponse
 
-def health_check(request):
-    return JsonResponse({"status": "ok"})
+def api_home(request):
+    return JsonResponse({"message": "Welcome to SwasthGram API!"})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('authentication.urls')),  
-    path('healthz', health_check),
     path('', include('hygiene.urls')),
     path('', api_home),  
 ]

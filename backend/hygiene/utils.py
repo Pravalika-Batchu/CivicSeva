@@ -41,69 +41,6 @@ def call_openrouter(prompt, model="deepseek/deepseek-chat"):
             
     return None
 
-def notify_issue_submission(issue):
-    try:
-        phone = issue.citizen.phone_number
-        title = issue.title
-        location = f"{issue.latitude}, {issue.longitude}" if issue.latitude and issue.longitude else "unspecified location"
-        if phone:
-            WhatsAppNotifier.confirm_whatsapp_submission(phone, title, location)
-            logger.info(f"Citizen confirmation sent to {phone}")
-        else:
-            logger.warning("Citizen has no phone number; skipping WhatsApp confirmation")
-    except Exception as e:
-        logger.exception(f"Error in notify_issue_submission: {e}")
-
-def notify_officers_on_high_severity(issue):
-    from .models import User, UserProfile
-    from geopy.distance import geodesic
-
-    try:
-        if issue.severity.lower() != "high" and issue.duplicate_count < 2:
-            logger.info(f"Issue {issue.id} not high severity/critical; skipping mass alert.")
-            return
-
-        message = (
-            f"🚨 *CivicSeva Alert: High Priority Issue*\n"
-            f"Title: {issue.title}\n"
-            f"Type: {issue.category}\n"
-            f"Loc: https://maps.google.com/?q={issue.latitude},{issue.longitude}\n"
-            f"Desc: {issue.description[:100]}..."
-        )
-
-        # 1. Notify Department Officers
-        if issue.department:
-            officers = User.objects.filter(role='DEPT_OFFICER', department=issue.department)
-            for officer in officers:
-                if officer.phone_number:
-                    WhatsAppNotifier.send_text_message(officer.phone_number, message)
-                    logger.info(f"Alert sent to Officer {officer.username}")
-
-        # 2. Notify Nearby Citizens (within 1km)
-        if issue.latitude and issue.longitude:
-            profiles = UserProfile.objects.filter(latitude__isnull=False, longitude__isnull=False)
-            for profile in profiles:
-                # Skip the reporter themselves
-                if profile.user == issue.citizen:
-                    continue
-                
-                # Check distance
-                dist = geodesic((issue.latitude, issue.longitude), (profile.latitude, profile.longitude)).km
-                if dist <= 1.0:
-                    if profile.user.phone_number:
-                        WhatsAppNotifier.send_text_message(profile.user.phone_number, message)
-                        logger.info(f"Alert sent to Nearby Citizen {profile.user.username} ({dist:.2f}km)")
-
-    except Exception as e:
-        logger.exception(f"Error in notify_officers_on_high_severity: {e}")
-
-def notify_user_status_update(issue):
-    try:
-        WhatsAppNotifier.notify_user_status_update(issue)
-        logger.info(f"Citizen notified about status update for issue {issue.id}")
-    except Exception as e:
-        logger.exception(f"Error in notify_user_status_update: {e}")
-
 def refine_issue_description(raw_text: str) -> str:
     """
     Transforms raw user input into a professional, structured civic report via AI.

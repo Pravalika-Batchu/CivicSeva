@@ -9,8 +9,7 @@ from .models import (
     Department, StatusLog, DepartmentNotification, SolveRequest
 )
 from .serializers import IssueSerializer, IssueCommentSerializer, DepartmentNotificationSerializer, DepartmentSerializer
-from .utils import notify_issue_submission, notify_officers_on_high_severity, refine_issue_description, is_duplicate_issue
-from .notifications import WhatsAppNotifier
+from .utils import refine_issue_description, is_duplicate_issue, call_openrouter
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from collections import defaultdict
@@ -257,11 +256,6 @@ def submit_issue(request):
     
     logger.debug(f"New issue created: #{issue.id}, category={department_name}, severity={severity}")
     
-    # Send notifications
-    notify_issue_submission(issue)
-    if issue.duplicate_count >= DUPLICATE_THRESHOLD:
-        notify_officers_on_high_severity(issue)
-
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
     profile.points += 5
     profile.save()
@@ -497,7 +491,6 @@ def update_issue_status(request, issue_id):
         issue.status = new_status
         issue.save()
         StatusLog.objects.create(issue=issue, old_status=old_status, new_status=new_status, updated_by=request.user, timestamp=timezone.now())
-        WhatsAppNotifier.notify_user_status_update(issue)
         return Response({"message": f"Issue status updated: {old_status} → {new_status}"})
     return Response({"error": "Permission denied"}, status=403)
 
@@ -787,26 +780,6 @@ def delete_report(request, issue_id):
         return Response({'error': 'Permission denied'}, status=403)
     issue.delete()
     return Response({'message': 'Issue deleted successfully!'}, status=200)
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def send_department_notification(request):
-    issue_id = request.data.get("issue_id")
-    notif_type = request.data.get("notif_type")
-    message = request.data.get("message")
-    try:
-        issue = Issue.objects.get(id=issue_id)
-    except Issue.DoesNotExist:
-        return Response({"error": "Issue not found"}, status=404)
-    department = issue.department or Department.objects.get_or_create(name="OTHER")[0]
-    notification = DepartmentNotification.objects.create(
-        issue=issue,
-        sender=request.user,
-        department=department,
-        notif_type=notif_type,
-        message=message
-    )
-    return Response({"success": True})
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

@@ -42,10 +42,9 @@ urlpatterns = [
 
     path('api/issues/<int:issue_id>/update_status/', views.update_issue_status, name='update_issue_status'),
 
-    path('api/department-notifications/send/', views.send_department_notification, name='send_department_notification'),
-    path('api/department-notifications/', views.get_department_notifications, name='get_department_notifications'),
-
-    path('api/admin-notifications/', views.admin_notifications, name='admin_notifications'),
+    # path('api/department-notifications/send/', views.send_department_notification, name='send_department_notification'),
+    # path('api/department-notifications/', views.get_department_notifications, name='get_department_notifications'),
+    # path('api/admin-notifications/', views.admin_notifications, name='admin_notifications'),
     path('api/department-statistics/', views.department_statistics, name='department_statistics'),
 
     path('api/issues/check-duplicate/', views.check_duplicate_issue, name='check_duplicate_ai'),
