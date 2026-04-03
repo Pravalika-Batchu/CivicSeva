@@ -27,4 +27,5 @@ COPY . /app/
 EXPOSE 8000
 
 # Run server with Gunicorn binding to Render's dynamic $PORT
-CMD ["sh", "-c", "gunicorn backend.wsgi:application --bind 0.0.0.0:${PORT:-8000}"]
+# Run migrations and then start the server
+CMD ["sh", "-c", "python manage.py migrate && gunicorn backend.wsgi:application --bind 0.0.0.0:${PORT:-8000}"]
