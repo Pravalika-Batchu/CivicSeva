@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api/axios";
 import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from "chart.js";
-import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
+import { Container, Row, Col, Spinner } from "react-bootstrap";
 import { FaChartBar, FaCheckCircle, FaExclamationTriangle, FaHourglassHalf, FaClipboardList } from "react-icons/fa";
 import "animate.css";
 import "./OfficerStatistics.css"; // Keep for custom if needed

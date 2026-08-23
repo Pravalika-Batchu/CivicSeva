@@ -16,6 +16,7 @@ function AdminDashboard() {
 
     useEffect(() => {
         fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchData = async () => {
@@ -38,7 +39,6 @@ function AdminDashboard() {
         const total = issuesData.length;
         const pending = issuesData.filter((i) => i.status === "PENDING").length;
         const resolved = issuesData.filter((i) => i.status === "RESOLVED").length;
-        const inProgress = issuesData.filter((i) => i.status === "IN_PROGRESS").length;
 
         const deptCount = {};
         issuesData.forEach((i) => {
@@ -129,9 +129,14 @@ function AdminDashboard() {
                     <h2 className="display-6 fw-bold text-gradient">Admin Dashboard</h2>
                     <p className="text-muted mb-0">System overview and analytics</p>
                 </div>
-                <Button variant="light" className="rounded-pill shadow-sm" onClick={fetchData} disabled={loading}>
-                    <FaSync className={`me-2 ${loading ? 'fa-spin' : ''}`} /> Refresh
-                </Button>
+                <div className="d-flex gap-2">
+                    <Button variant="danger" className="rounded-pill shadow-sm" onClick={() => window.location.href = '/hotspots'}>
+                        🔥 Hotspot Analysis
+                    </Button>
+                    <Button variant="light" className="rounded-pill shadow-sm" onClick={fetchData} disabled={loading}>
+                        <FaSync className={`me-2 ${loading ? 'fa-spin' : ''}`} /> Refresh
+                    </Button>
+                </div>
             </div>
 
             {loading ? (
@@ -149,11 +154,11 @@ function AdminDashboard() {
                                 {aiLoading ? (
                                     <div className="d-flex align-items-center gap-2 text-muted">
                                         <Spinner size="sm" animation="border" />
-                                        <span className="small italic text-info">DeepSeek is processing city data...</span>
+                                        <span className="small italic text-info">Generating executive intelligence...</span>
                                     </div>
                                 ) : (
                                     <p className="mb-0 text-dark fw-medium" style={{ lineHeight: '1.6', fontSize: '1.05rem', letterSpacing: '0.3px', fontStyle: 'italic' }}>
-                                        "{aiSummary}"
+                                        "{aiSummary || 'Civic infrastructure monitoring is operating within standard parameters across municipal wards.'}"
                                     </p>
                                 )}
                             </div>

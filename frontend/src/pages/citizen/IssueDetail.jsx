@@ -1,36 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../services/api/axios';
+import { Container, Button, Badge, Row, Col } from 'react-bootstrap';
+import { FaArrowLeft, FaMapMarkerAlt, FaCalendarAlt, FaUser } from 'react-icons/fa';
+import CivicIntelligenceCard from '../../components/CivicIntelligenceCard';
+import ResolutionEvidenceCard from '../../components/ResolutionEvidenceCard';
 import './IssueDetail.css';
 
 function IssueDetail() {
-    const { id } = useParams(); // Get issue ID from URL
+    const { id } = useParams();
     const navigate = useNavigate();
     const [issue, setIssue] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const accessToken = localStorage.getItem('access');
 
+    const fetchIssue = async () => {
+        try {
+            const response = await api.get(`/api/issues/${id}/`);
+            setIssue(response.data);
+            setLoading(false);
+        } catch (err) {
+            console.error('Error fetching issue:', err.response?.data || err.message);
+            setError(
+                err.response?.status === 404
+                    ? 'Issue not found. It may have been removed or does not exist.'
+                    : 'Failed to load issue details. Please check your connection or try again.'
+            );
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchIssue = async () => {
-            try {
-                const response = await api.get(`/api/issues/${id}/`, {
-                    headers: { Authorization: `Bearer ${accessToken}` },
-                });
-                setIssue(response.data);
-                setLoading(false);
-            } catch (err) {
-                console.error('Error fetching issue:', err.response?.data || err.message);
-                setError(
-                    err.response?.status === 403
-                        ? 'You do not have permission to view this issue.'
-                        : 'Failed to load issue details. The issue may not exist or there was a server error.'
-                );
-                setLoading(false);
-            }
-        };
         fetchIssue();
-    }, [id, accessToken]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
 
     if (loading) {
         return (
@@ -55,112 +59,92 @@ function IssueDetail() {
     }
 
     return (
-        <div className="issue-detail-container">
-            <header className="issue-header">
-                <h1>Issue #{issue.id}: {issue.title}</h1>
-                <button onClick={() => navigate('/issue-map')} className="btn btn-secondary">Back to Map</button>
-            </header>
-            <div className="issue-content">
-                <div className="issue-section">
-                    <h2>Overview</h2>
-                    <p><strong>Title:</strong> {issue.title}</p>
-                    <p><strong>Description:</strong> {issue.description}</p>
-                    {issue.details && <p><strong>Details:</strong> {issue.details}</p>}
-                    <p><strong>Severity:</strong> <span className={`severity ${issue.severity.toLowerCase()}`}>{issue.severity}</span></p>
-                    <p><strong>Status:</strong> {issue.status}</p>
-                    <p><strong>Category:</strong> {issue.category}</p>
-                    <p><strong>Department:</strong> {issue.department_name || 'None'}</p>
-                    {issue.community_deadline && (
-                        <div className="mt-3 p-3 bg-warning-subtle rounded border border-warning text-dark">
-                            <strong>⏰ Community Deadline:</strong> {new Date(issue.community_deadline).toLocaleString()}
-                        </div>
-                    )}
-                    {issue.assigned_to_username === localStorage.getItem("username") && issue.status !== 'RESOLVED' && issue.status !== 'PENDING_APPROVAL' && (
-                        <button
-                            className="btn btn-success mt-3 w-100 fw-bold shadow-sm"
-                            onClick={() => navigate(`/issue/${issue.id}/resolve`)}
-                        >
-                            🛠️ Resolve This Issue
-                        </button>
-                    )}
-                </div>
-                <div className="issue-section">
-                    <h2>Location</h2>
-                    <p><strong>Address:</strong> {issue.address || 'Not specified'}</p>
-                    <p><strong>Coordinates:</strong> ({issue.latitude}, {issue.longitude})</p>
-                </div>
-                {issue.photo && (
-                    <div className="issue-section">
-                        <h2>Photo</h2>
-                        <img src={issue.photo} alt="Issue" className="issue-image" />
-                    </div>
-                )}
-                {(issue.resolution_description || issue.resolution_proof) && (
-                    <div className="issue-section">
-                        <h2>Resolution</h2>
-                        {issue.resolution_description && (
-                            <p><strong>Resolution Description:</strong> {issue.resolution_description}</p>
-                        )}
-                        {issue.resolution_proof && (
-                            <div>
-                                <p><strong>Resolution Proof:</strong></p>
-                                <img src={issue.resolution_proof} alt="Resolution Proof" className="issue-image" />
+        <Container className="py-4 px-md-4" style={{ minHeight: '90vh' }}>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <Button variant="link" className="text-decoration-none text-muted p-0 fw-bold hover-start" onClick={() => navigate(-1)}>
+                    <FaArrowLeft className="me-2" />Back
+                </Button>
+                <Badge bg={issue.status === 'RESOLVED' ? 'success' : issue.status === 'PENDING_APPROVAL' ? 'warning text-dark' : 'primary'} className="px-3 py-2 fs-6">
+                    {issue.status}
+                </Badge>
+            </div>
+
+            {/* Feature 1: Issue Intelligence Card */}
+            <CivicIntelligenceCard issue={issue} />
+
+            {/* Feature 3: Resolution Evidence Card (When resolution proof or description exists) */}
+            {(issue.resolution_proof || issue.resolution_description || issue.status === 'PENDING_APPROVAL' || issue.status === 'RESOLVED') && (
+                <ResolutionEvidenceCard 
+                    issue={issue} 
+                    onStatusUpdate={() => fetchIssue()} 
+                />
+            )}
+
+            {/* Main Details & Live Timeline */}
+            <Row className="g-4 mb-4">
+                {/* Photo & Description Section */}
+                <Col lg={7}>
+                    <div className="glass-panel p-4 h-100 bg-white shadow-sm" style={{ borderRadius: '20px' }}>
+                        <h4 className="fw-bold text-dark mb-2">#{issue.id}: {issue.title}</h4>
+                        <p className="text-muted lead fs-6 mb-4">{issue.description}</p>
+
+                        {issue.photo && (
+                            <div className="mb-4">
+                                <h6 className="text-muted text-uppercase small fw-bold mb-2">Citizen Photo Evidence</h6>
+                                <img src={issue.file_url || issue.photo} alt="Issue" className="img-fluid rounded-4 shadow-sm w-100 object-fit-cover" style={{ maxHeight: '350px' }} />
                             </div>
                         )}
-                        <p><strong>Approved:</strong> {issue.is_approved ? 'Yes' : 'No'}</p>
-                        <p><strong>Resolved By:</strong> {issue.resolver_info ? `${issue.resolver_info.username} (${issue.resolver_info.role})` : (issue.resolved_by?.username || 'Officer')}</p>
-                    </div>
-                )}
 
-                <div className="issue-section">
-                    <h2>📦 Process Timeline (Live Tracker)</h2>
-                    <div className="timeline-container mt-3">
-                        {/* Initial Report Event */}
-                        <div className="timeline-item">
-                            <div className="timeline-marker bg-primary"></div>
-                            <div className="timeline-content">
-                                <h6 className="fw-bold mb-1">Issue Reported</h6>
-                                <p className="text-muted small mb-0">
-                                    By {issue.citizen_username}
-                                </p>
-                                <small className="text-secondary">{new Date(issue.created_at).toLocaleString()}</small>
-                            </div>
+                        <div className="p-3 bg-light rounded-3 d-flex flex-wrap justify-content-between gap-2 text-muted small">
+                            <span><FaUser className="me-1 text-primary" /> Reported by <strong>@{issue.citizen_username}</strong></span>
+                            <span><FaMapMarkerAlt className="me-1 text-danger" /> {issue.address || "Location on Map"}</span>
+                            <span><FaCalendarAlt className="me-1 text-info" /> {new Date(issue.created_at).toLocaleDateString()}</span>
                         </div>
+                    </div>
+                </Col>
 
-                        {/* Logs */}
-                        {issue.status_logs && issue.status_logs.map((log, index) => (
-                            <div key={index} className="timeline-item">
-                                <div className="timeline-marker bg-info"></div>
+                {/* Process Timeline (Live Tracker) */}
+                <Col lg={5}>
+                    <div className="glass-panel p-4 h-100 bg-white shadow-sm" style={{ borderRadius: '20px' }}>
+                        <h5 className="fw-bold text-dark mb-3">📦 Process Timeline (Audit Trail)</h5>
+                        <div className="timeline-container">
+                            {/* Initial Report Event */}
+                            <div className="timeline-item">
+                                <div className="timeline-marker bg-primary"></div>
                                 <div className="timeline-content">
-                                    <h6 className="fw-bold mb-1">Status changed to {log.new_status}</h6>
-                                    <p className="text-muted small mb-0">
-                                        Updated by {log.updated_by_username || "System"}
-                                    </p>
-                                    <small className="text-secondary">{new Date(log.timestamp).toLocaleString()}</small>
+                                    <h6 className="fw-bold mb-0 text-dark small">1. Issue Reported</h6>
+                                    <p className="text-muted small mb-0">By citizen @{issue.citizen_username}</p>
+                                    <small className="text-secondary">{new Date(issue.created_at).toLocaleString()}</small>
                                 </div>
                             </div>
-                        ))}
 
-                        {/* Current Status Indicator */}
-                        <div className="timeline-item">
-                            <div className={`timeline-marker ${issue.status === 'RESOLVED' ? 'bg-success' : 'bg-warning animate__animated animate__pulse animate__infinite'}`}></div>
-                            <div className="timeline-content">
-                                <h6 className="fw-bold mb-1 text-uppercase">Current Status: {issue.status}</h6>
-                                <p className="text-muted small mb-0">
-                                    {issue.status === 'RESOLVED' ? 'Issue has been fixed!' : 'Team is working on it...'}
-                                </p>
+                            {/* Logs */}
+                            {issue.status_logs && issue.status_logs.map((log, index) => (
+                                <div key={index} className="timeline-item">
+                                    <div className="timeline-marker bg-info"></div>
+                                    <div className="timeline-content">
+                                        <h6 className="fw-bold mb-0 text-dark small">Status: {log.new_status}</h6>
+                                        <p className="text-muted small mb-0">Updated by {log.updated_by_username || "System"}</p>
+                                        <small className="text-secondary">{new Date(log.timestamp).toLocaleString()}</small>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Current Status */}
+                            <div className="timeline-item">
+                                <div className={`timeline-marker ${issue.status === 'RESOLVED' ? 'bg-success' : 'bg-warning animate__animated animate__pulse animate__infinite'}`}></div>
+                                <div className="timeline-content">
+                                    <h6 className="fw-bold mb-0 text-dark small">Current State: {issue.status}</h6>
+                                    <p className="text-muted small mb-0">
+                                        {issue.status === 'RESOLVED' ? 'Issue verified and closed!' : 'Active municipal pipeline stage'}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div className="issue-section">
-                    <h2>Timestamps</h2>
-                    <p><strong>Created At:</strong> {new Date(issue.created_at).toLocaleString()}</p>
-                    <p><strong>Updated At:</strong> {new Date(issue.updated_at).toLocaleString()}</p>
-                </div>
-            </div>
-        </div>
+                </Col>
+            </Row>
+        </Container>
     );
 }
 

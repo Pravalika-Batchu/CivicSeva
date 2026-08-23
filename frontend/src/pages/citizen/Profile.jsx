@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api/axios";
-import { Container, Row, Col, Button, Badge } from "react-bootstrap";
-import { FaUser, FaPhone, FaStar, FaMedal, FaSignOutAlt, FaClipboardList, FaTrophy } from "react-icons/fa";
+import { Container, Row, Col, Button, Badge, Spinner, Alert } from "react-bootstrap";
+import { FaPhone, FaStar, FaMedal, FaSignOutAlt, FaClipboardList, FaTrophy } from "react-icons/fa";
 import "animate.css";
-import "./Profile.css"; // We will rely on global styles mostly
+import "./Profile.css";
 
 function Profile() {
     const [profile, setProfile] = useState({
@@ -66,8 +66,18 @@ function Profile() {
 
     return (
         <Container className="py-5" style={{ minHeight: '100vh', maxWidth: '1000px' }}>
-            {/* Profile Header */}
-            <div className="glass-panel p-5 mb-5 position-relative overflow-hidden animate__animated animate__fadeInDown">
+            {message && (
+                <Alert variant="danger" className="mb-4 shadow-sm animate__animated animate__fadeIn">
+                    {message.text}
+                </Alert>
+            )}
+
+            {isLoading ? (
+                <div className="text-center py-5"><Spinner animation="border" variant="primary" /></div>
+            ) : (
+                <>
+                    {/* Profile Header */}
+                    <div className="glass-panel p-5 mb-5 position-relative overflow-hidden animate__animated animate__fadeInDown">
                 <div className="position-absolute top-0 start-0 w-100 h-100 opacity-10"
                     style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', zIndex: -1 }}>
                 </div>
@@ -147,7 +157,8 @@ function Profile() {
                     Submit New Report
                 </Button>
             </div>
-
+                </>
+            )}
         </Container>
     );
 }

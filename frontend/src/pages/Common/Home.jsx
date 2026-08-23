@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Container, Row, Col, Button, Badge } from "react-bootstrap";
-import { FaBolt, FaShieldAlt, FaMagic, FaArrowRight, FaCity, FaUserFriends, FaRegCheckCircle } from "react-icons/fa";
+import { Container, Row, Col } from "react-bootstrap";
+import { FaBolt, FaShieldAlt, FaMagic, FaArrowRight, FaCity, FaUserFriends } from "react-icons/fa";
 import "animate.css";
 import "./Home.css";
 
@@ -20,7 +20,7 @@ const Home = () => {
             setActiveFeature((prev) => (prev + 1) % features.length);
         }, 3000);
         return () => clearInterval(interval);
-    }, []);
+    }, [features.length]);
 
     return (
         <div className="home-container">

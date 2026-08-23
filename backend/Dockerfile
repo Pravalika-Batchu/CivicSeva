@@ -4,7 +4,7 @@ FROM python:3.10-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app
+WORKDIR /backend
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -16,16 +16,15 @@ RUN apt-get update && apt-get install -y \
 
 
 # Install python dependencies
-COPY requirements.txt /app/
+COPY requirements.txt /backend/
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Copy project
-COPY . /app/
+COPY . /backend/
 
 # Expose port (Render uses dynamic $PORT, but 8000 is a good default context)
 EXPOSE 8000
 
-# Run server with Gunicorn binding to Render's dynamic $PORT
-# Run migrations and then start the server
+# Run server with Gunicorn binding to dynamic $PORT or 8000
 CMD ["sh", "-c", "python manage.py migrate && gunicorn backend.wsgi:application --bind 0.0.0.0:${PORT:-8000}"]

@@ -17,6 +17,12 @@ class User(AbstractUser):
         ('CITIZEN', 'Citizen'),
         ('ADMIN', 'Admin'),
         ('DEPT_OFFICER', 'Department Officer'),
+        ('DEPT_EMPLOYEE', 'Department Employee'),
+    ]
+    AVAILABILITY_CHOICES = [
+        ('AVAILABLE', 'Available'),
+        ('BUSY', 'Busy'),
+        ('UNAVAILABLE', 'Unavailable'),
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='CITIZEN')
     department = models.ForeignKey(
@@ -27,6 +33,7 @@ class User(AbstractUser):
         limit_choices_to={'name__in': ALLOWED_DEPARTMENTS}
     )
     phone_number = models.CharField(max_length=25, blank=True, null=True)
+    availability = models.CharField(max_length=20, choices=AVAILABILITY_CHOICES, default='AVAILABLE')
 
     def __str__(self):
         return f"{self.username} ({self.role})"
@@ -77,6 +84,8 @@ class Issue(models.Model):
 
     citizen = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reported_issues")
     assigned_user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="assigned_issues")
+    assigned_employee = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="employee_assigned_issues")
+    assigned_officer = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="officer_assigned_issues")
     department = models.ForeignKey('Department', null=True, blank=True, on_delete=models.SET_NULL, related_name="issue")
 
     title = models.CharField(max_length=255)
@@ -85,8 +94,10 @@ class Issue(models.Model):
     severity = models.CharField(max_length=10, choices=SEVERITY_CHOICES, default="Medium")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="OPEN")
     address = models.CharField(max_length=255, blank=True, null=True)
+    location_tag = models.CharField(max_length=100, blank=True, default='')
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
+    priority_score = models.IntegerField(default=50, db_index=True)
 
     resolution_proof = models.FileField(upload_to="resolutions/", null=True, blank=True)
     resolution_description = models.TextField(blank=True, null=True)

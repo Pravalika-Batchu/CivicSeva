@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../../services/api/axios";
-import { Container, Row, Col, Form, Button, ListGroup, InputGroup } from "react-bootstrap";
-import { FaBuilding, FaPlus, FaTrash, FaSearch } from "react-icons/fa";
+import { Container, Form, Button, ListGroup } from "react-bootstrap";
+import { FaBuilding, FaPlus } from "react-icons/fa";
 import "animate.css";
 
 function ManageDepartments() {

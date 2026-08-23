@@ -21,11 +21,14 @@ import Reports from './pages/Common/Reports';
 import Profile from './pages/citizen/Profile';
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import OfficerStatistics from "./pages/officer/OfficerStatistics";
-import CivicRiskAnalysis from "./pages/citizen/RiskAnalysis";
 import ViewResolution from "./pages/citizen/ViewResolution";
 import IssueMap from "./pages/citizen/IssueMap";
 import IssueDetail from "./pages/citizen/IssueDetail";
 
+
+import RegisterEmployee from "./pages/auth/RegisterEmployee";
+import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
+import HotspotAnalysis from "./pages/Common/HotspotAnalysis";
 
 function App() {
   return (
@@ -36,6 +39,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register/citizen" element={<RegisterCitizen />} />
         <Route path="/register/officer" element={<RegisterOfficer />} />
+        <Route path="/register/employee" element={<RegisterEmployee />} />
         <Route path="/register/admin" element={<RegisterAdmin />} />
 
         {/* Citizen */}
@@ -43,27 +47,34 @@ function App() {
         <Route path="/my-reports" element={<MyReports />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/risk-map" element={<CivicRiskAnalysis />} />
         <Route path="/resolution" element={<ViewResolution />} />
+        <Route path="/resolution/:id" element={<ViewResolution />} />
+        <Route path="/issue/:id/resolution" element={<ViewResolution />} />
         <Route path="/issue-map" element={<IssueMap />} />
         <Route path="/issue/:id" element={<IssueDetail />} />
+
+        {/* Employee */}
+        <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+
         {/* Officer */}
         <Route path="/officer/dashboard" element={<OfficerDashboard />} />
         <Route path="/officer/issue/:id" element={<OfficerIssueDetail />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/officer/statistics" element={<OfficerStatistics />} />
+
         {/* Admin */}
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/departments" element={<ManageDepartments />} />
         <Route path="/admin/reassign" element={<ReassignIssues />} />
         <Route path="/admin/reports" element={<AdminReports />} />
         <Route path="/admin/notifications" element={<AdminNotifications />} />
-        {/* Common */}
 
+        {/* Common */}
+        <Route path="/hotspots" element={<HotspotAnalysis />} />
         <Route path="/issue/:id/resolve" element={<SubmitResolution />} />
         <Route path="/" element={<Home />} />
         <Route path="/reports" element={<Reports />} />
-      </Routes >
+      </Routes>
       <Footer />
     </>
   );

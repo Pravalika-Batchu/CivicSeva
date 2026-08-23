@@ -13,7 +13,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 import os
-import dj_database_url
+import socket
+try:
+    import dj_database_url
+except ImportError:
+    dj_database_url = None
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,8 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-fallback-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-#hosts for deployment
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1')
+
+# Hosts for deployment
 ALLOWED_HOSTS = ['*']
 
 # JWT settings
@@ -130,11 +135,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+# Database configuration with dynamic fallback
+def is_postgres_available(host, port):
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(0.5)
+        result = sock.connect_ex((host, int(port)))
+        sock.close()
+        return result == 0
+    except Exception:
+        return False
+
 IS_RENDER = os.environ.get('RENDER')
 
-if os.environ.get('DATABASE_URL'):
+if os.environ.get('DATABASE_URL') and dj_database_url:
     DATABASES = {
         'default': dj_database_url.config(
             conn_max_age=600,
@@ -142,20 +156,30 @@ if os.environ.get('DATABASE_URL'):
         )
     }
 elif IS_RENDER:
-    # 🛑 If on Render and missing DATABASE_URL, fail explicitly
     raise ValueError("DATABASE_URL must be set in Render environment variables!")
 else:
-    # Local fallback
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('POSTGRES_DB', 'swasthgram_db'),
-            'USER': os.environ.get('POSTGRES_USER', 'postgres'),
-            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'batchu123'),
-            'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
-            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+    db_host = os.environ.get('POSTGRES_HOST', 'localhost')
+    db_port = os.environ.get('POSTGRES_PORT', '5432')
+    use_sqlite_env = os.environ.get('USE_SQLITE', '').lower() in ('true', '1', 'yes')
+
+    if use_sqlite_env or not is_postgres_available(db_host, db_port):
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
         }
-    }
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': os.environ.get('POSTGRES_DB', 'swasthgram_db'),
+                'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+                'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'batchu123'),
+                'HOST': db_host,
+                'PORT': db_port,
+            }
+        }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

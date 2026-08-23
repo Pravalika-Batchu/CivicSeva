@@ -1,6 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Badge } from "react-bootstrap";
 import "./Navbar.css";
 
 function Navbar() {
@@ -33,7 +32,7 @@ function Navbar() {
             <div className="container-fluid px-4">
                 {/* Logo */}
                 <Link className="navbar-brand d-flex align-items-center gap-2" to="/">
-                    <span className="brand-icon" style={{ fontSize: '1.5rem' }}>🌍</span>
+                    <span className="brand-icon" style={{ fontSize: '1.5rem' }}>🌍 CivicSeva</span>
                     <span style={{ fontWeight: 800, background: 'var(--grad-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                         CivicSeva
                     </span>
@@ -68,7 +67,7 @@ function Navbar() {
                                 {role === "CITIZEN" && (
                                     <>
                                         <li className="nav-item">
-                                            <Link className="nav-link" to="/issue-map">Map View</Link>
+                                            <Link className="nav-link" to="/issue-map">🗺️ Map View</Link>
                                         </li>
                                         <li className="nav-item">
                                             <Link className="nav-link" to="/reports">Reports</Link>
@@ -100,11 +99,32 @@ function Navbar() {
                                     </>
                                 )}
 
+                                {/* Employee Links */}
+                                {role === "DEPT_EMPLOYEE" && (
+                                    <>
+                                        <li className="nav-item">
+                                            <Link className="nav-link fw-bold text-primary" to="/employee/dashboard">📋 My Tasks</Link>
+                                        </li>
+                                        <li className="nav-item">
+                                            <Link className="nav-link" to="/hotspots">🔥 Hotspots</Link>
+                                        </li>
+                                        <li className="nav-item">
+                                            <Link className="nav-link" to="/reports">All Issues</Link>
+                                        </li>
+                                        <li className="nav-item">
+                                            <Link className="nav-link" to="/leaderboard">Leaderboard</Link>
+                                        </li>
+                                    </>
+                                )}
+
                                 {/* Officer Links */}
                                 {role === "DEPT_OFFICER" && (
                                     <>
                                         <li className="nav-item">
-                                            <Link className="nav-link" to="/officer/dashboard">Dashboard</Link>
+                                            <Link className="nav-link fw-bold text-primary" to="/officer/dashboard">Command Center</Link>
+                                        </li>
+                                        <li className="nav-item">
+                                            <Link className="nav-link" to="/hotspots">🔥 Hotspots</Link>
                                         </li>
                                         <li className="nav-item">
                                             <Link className="nav-link" to="/officer/statistics">Statistics</Link>
@@ -122,7 +142,10 @@ function Navbar() {
                                 {role === "ADMIN" && (
                                     <>
                                         <li className="nav-item">
-                                            <Link className="nav-link" to="/admin/dashboard">Dashboard</Link>
+                                            <Link className="nav-link fw-bold text-primary" to="/admin/dashboard">Dashboard</Link>
+                                        </li>
+                                        <li className="nav-item">
+                                            <Link className="nav-link" to="/hotspots">🔥 Hotspots</Link>
                                         </li>
                                         <li className="nav-item">
                                             <Link className="nav-link" to="/admin/reassign">Reassign</Link>
@@ -141,13 +164,16 @@ function Navbar() {
                                     </>
                                 )}
 
-                                <li className="nav-item">
+                                {/* Common for all logged-in */}
+                                <li className="nav-item d-flex align-items-center gap-2 border-start ps-3 ms-2">
+                                    <span className="badge bg-light text-dark border">
+                                        {role === "DEPT_EMPLOYEE" ? "🛠️ Employee" : role === "DEPT_OFFICER" ? "🏛️ Officer" : role === "ADMIN" ? "👑 Admin" : "👤 Citizen"}
+                                    </span>
                                     <button
-                                        className="btn btn-link nav-link text-danger"
-                                        style={{ textDecoration: 'none' }}
+                                        className="btn btn-outline-danger btn-sm rounded-pill px-3"
                                         onClick={() => {
                                             localStorage.clear();
-                                            window.location.href = "/";
+                                            navigate("/login");
                                         }}
                                     >
                                         Logout

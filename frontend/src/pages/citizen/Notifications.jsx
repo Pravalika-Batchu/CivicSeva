@@ -17,7 +17,6 @@ function Notifications() {
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [userLocation, setUserLocation] = useState(null);
 
     // Haversine formula to calculate distance
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -137,7 +136,6 @@ function Notifications() {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const { latitude, longitude } = position.coords;
-                        setUserLocation({ lat: latitude, lng: longitude });
                         fetchNotificationsData(latitude, longitude);
                     },
                     (err) => {

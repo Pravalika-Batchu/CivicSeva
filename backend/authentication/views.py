@@ -110,6 +110,51 @@ def register_officer(request):
     except Exception as e:
         logger.error(f"Error creating officer: {str(e)}")
         return Response({'error': 'Registration failed due to server error'}, status=500)
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_employee(request):
+    logger.info(f"Received employee registration request: {request.data}")
+    username = request.data.get('username')
+    password = request.data.get('password')
+    department_id = request.data.get('department')
+    phone_number = request.data.get('phone_number')
+
+    if not username or not password or not department_id or not phone_number:
+        logger.error("Missing required fields")
+        return Response({'error': 'Username, password, department, and phone number required'}, status=400)
+
+    if not validate_phone_number(phone_number):
+        logger.error(f"Invalid phone number: {phone_number}")
+        return Response({'error': 'Phone number must be in E.164 format (e.g., +1234567890)'}, status=400)
+
+    if User.objects.filter(username=username).exists():
+        logger.error(f"Username already exists: {username}")
+        return Response({'error': 'Username already exists'}, status=400)
+
+    try:
+        dept = Department.objects.get(id=department_id)
+    except Department.DoesNotExist:
+        return Response({'error': 'Invalid department ID'}, status=400)
+
+    try:
+        user = User.objects.create_user(
+            username=username,
+            password=password,
+            role="DEPT_EMPLOYEE",
+            department=dept,
+            is_staff=False,
+            is_superuser=False,
+            phone_number=phone_number,
+            availability='AVAILABLE'
+        )
+        logger.info(f"Employee registered: {username} under {dept.name}")
+        return Response({'message': f'Department Employee registered under {dept.name}'}, status=201)
+    except Exception as e:
+        logger.error(f"Error creating employee: {str(e)}")
+        return Response({'error': 'Registration failed due to server error'}, status=500)
+
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -158,17 +203,25 @@ from rest_framework.response import Response
 @permission_classes([AllowAny])
 @csrf_exempt
 def login_user(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
+    username = str(request.data.get('username', '')).strip()
+    password = str(request.data.get('password', ''))
 
     if not username or not password:
         logger.error("Missing username or password")
         return Response({'error': 'Username and password required'}, status=400)
 
+    # 1. Try standard authenticate
     user = authenticate(username=username, password=password)
-    if user is not None:
+
+    # 2. Case-insensitive username fallback
+    if user is None:
+        matched_user = User.objects.filter(username__iexact=username).first()
+        if matched_user and matched_user.check_password(password):
+            user = matched_user
+
+    if user is not None and user.is_active:
         refresh = RefreshToken.for_user(user)
-        logger.info(f"User {username} logged in")
+        logger.info(f"User {user.username} logged in")
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
@@ -179,7 +232,7 @@ def login_user(request):
         }, status=200)
     else:
         logger.error(f"Invalid credentials for {username}")
-        return Response({'error': 'Invalid credentials'}, status=401)
+        return Response({'error': 'Invalid username or password'}, status=401)
     
 
 

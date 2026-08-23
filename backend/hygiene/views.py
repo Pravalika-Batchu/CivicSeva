@@ -9,7 +9,8 @@ from .models import (
     Department, StatusLog, DepartmentNotification, SolveRequest
 )
 from .serializers import IssueSerializer, IssueCommentSerializer, DepartmentNotificationSerializer, DepartmentSerializer
-from .utils import refine_issue_description, is_duplicate_issue, call_openrouter
+from .utils import notify_issue_submission, notify_officers_on_high_severity, refine_issue_description, is_duplicate_issue, call_openrouter
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from collections import defaultdict
@@ -18,7 +19,13 @@ import json, re
 import requests
 from django.conf import settings
 from django.db.models import Count, Q, Sum
-from django.shortcuts import get_object_or_404
+from .priority_engine import calculate_civic_intelligence
+from .hotspot_engine import compute_civic_hotspots, compute_hotspot_analytics
+from .workforce_engine import (
+    get_workforce_for_department,
+    auto_assign_task_to_employee,
+    manually_assign_task_to_employee
+)
 from .utils import call_openrouter
 
 logger = logging.getLogger(__name__)
@@ -199,7 +206,8 @@ def submit_issue(request):
         lng=float(data.get('longitude', '')) if data.get('longitude') else None,
         category=department_name,
         user=request.user,
-        address=data.get('address', '')
+        address=data.get('address', ''),
+        title=data.get('title', '')
     )
 
     if is_duplicate and original_issue:
@@ -216,6 +224,7 @@ def submit_issue(request):
             
         original_issue.upvotes = original_issue.votes.filter(vote_type='UP').count()
         original_issue.downvotes = original_issue.votes.filter(vote_type='DOWN').count()
+        original_issue.save()
         
         serializer = IssueSerializer(original_issue, context={'request': request})
         msg = f"Duplicate of issue #{original_issue.id} detected. Your report has been recorded as an upvote."
@@ -286,7 +295,8 @@ def check_duplicate_issue(request):
         lng=lng,
         category=category,
         user=request.user,
-        address=data.get('address', '')
+        address=request.data.get('address', ''),
+        title=request.data.get('title', '')
     )
 
     if is_duplicate and original_issue:
@@ -1080,12 +1090,9 @@ def nearby_issues(request):
     })
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def get_issue(request, issue_id):
     issue = get_object_or_404(Issue, pk=issue_id)
-    # Authorization check removed to allow public viewing of issues
-    # if issue.citizen != request.user and issue.assigned_user != request.user:
-    #     return Response({"error": "Not authorized to view this issue."}, status=403)
     serializer = IssueSerializer(issue, context={'request': request})
     return Response(serializer.data)
 
@@ -1126,3 +1133,199 @@ def review_flagged_issue(request, issue_id):
         return Response({"message": "Flag dismissed. Issue reopened."})
 
     return Response({"error": "Invalid action"}, status=400)
+
+
+# ============================================================================
+# FEATURE 4: DEPARTMENT WORKFORCE & INTELLIGENT TASK ALLOCATION ENDPOINTS
+# ============================================================================
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_department_employees(request):
+    """
+    Returns list of employees in the department with active task counts, overdue counts,
+    and workload status. Accessible to DEPT_OFFICER and ADMIN.
+    """
+    user = request.user
+    if user.role not in ['DEPT_OFFICER', 'ADMIN']:
+        return Response({"error": "Permission denied. Officer or Admin role required."}, status=403)
+
+    department = user.department
+    if user.role == 'ADMIN':
+        dept_name = request.query_params.get('department')
+        if dept_name:
+            department = Department.objects.filter(name=dept_name.upper()).first()
+        else:
+            # Return workforce across all departments
+            all_employees = []
+            for d in Department.objects.all():
+                all_employees.extend(get_workforce_for_department(d))
+            return Response(all_employees)
+
+    if not department:
+        return Response([])
+
+    workforce = get_workforce_for_department(department)
+    return Response(workforce)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def assign_employee_view(request, issue_id):
+    """
+    Manually assigns an issue to a specific department employee.
+    Enforces department boundary check.
+    """
+    user = request.user
+    if user.role not in ['DEPT_OFFICER', 'ADMIN']:
+        return Response({"error": "Permission denied. Only officers can assign tasks."}, status=403)
+
+    try:
+        issue = Issue.objects.get(id=issue_id)
+    except Issue.DoesNotExist:
+        return Response({"error": "Issue not found"}, status=404)
+
+    employee_id = request.data.get('employee_id')
+    if not employee_id:
+        return Response({"error": "employee_id is required"}, status=400)
+
+    try:
+        employee = User.objects.get(id=employee_id)
+    except User.DoesNotExist:
+        return Response({"error": "Employee not found"}, status=404)
+
+    result = manually_assign_task_to_employee(issue, employee, user)
+    if not result.get("success"):
+        return Response({"error": result.get("error")}, status=400)
+
+    serializer = IssueSerializer(issue, context={'request': request})
+    return Response({
+        "message": result.get("message"),
+        "assigned_employee": result.get("assigned_employee"),
+        "issue": serializer.data
+    }, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def auto_assign_view(request, issue_id):
+    """
+    Intelligently auto-assigns an issue to the best available employee with lowest active workload.
+    Returns the assigned employee and an explainable reasoning structure.
+    """
+    user = request.user
+    if user.role not in ['DEPT_OFFICER', 'ADMIN']:
+        return Response({"error": "Permission denied. Only officers can auto-assign tasks."}, status=403)
+
+    try:
+        issue = Issue.objects.get(id=issue_id)
+    except Issue.DoesNotExist:
+        return Response({"error": "Issue not found"}, status=404)
+
+    result = auto_assign_task_to_employee(issue, user)
+    if not result.get("success"):
+        return Response({"error": result.get("error", "Auto-assignment failed.")}, status=400)
+
+    serializer = IssueSerializer(issue, context={'request': request})
+    return Response({
+        "message": "Task successfully auto-allocated!",
+        "assigned_employee": result.get("assigned_employee"),
+        "reason": result.get("reason"),
+        "issue": serializer.data
+    }, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def employee_tasks_view(request):
+    """
+    Returns tasks assigned to the currently logged in Department Employee.
+    """
+    user = request.user
+    if user.role not in ['DEPT_EMPLOYEE', 'DEPT_OFFICER']:
+        return Response({"error": "Employee or Officer access required."}, status=403)
+
+    issues = Issue.objects.filter(
+        Q(assigned_employee=user) | Q(assigned_user=user)
+    ).order_by('-created_at')
+
+    serializer = IssueSerializer(issues, many=True, context={'request': request})
+    return Response(serializer.data)
+
+
+# ============================================================================
+# FEATURE 2: CIVIC HOTSPOT ANALYSIS ENDPOINTS
+# ============================================================================
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_hotspots_view(request):
+    """
+    Returns deterministic geospatial clusters / civic hotspots (HIGH_RISK_HOTSPOT, RECURRING_ZONE, EMERGING_CONCERN).
+    """
+    threshold_km = float(request.query_params.get('radius_km', 0.5))
+    hotspots = compute_civic_hotspots(threshold_km=threshold_km)
+    return Response(hotspots)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_hotspot_analytics_view(request):
+    """
+    Returns aggregated municipal statistics for Chart.js dashboard.
+    """
+    analytics = compute_hotspot_analytics()
+    return Response(analytics)
+
+
+# ============================================================================
+# FEATURE 1: PRIORITY QUEUE ("WHAT SHOULD WE FIX FIRST?")
+# ============================================================================
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_top_priorities_view(request):
+    """
+    Returns unresolved issues sorted by Civic Priority Score (0-100) descending.
+    Automatically scopes to the authenticated department officer's department,
+    or accepts an explicit '?department=' query parameter.
+    """
+    dept_filter = request.query_params.get('department')
+
+    # Automatically scope to authenticated officer's/employee's department if no query param provided
+    if not dept_filter and request.user.is_authenticated:
+        if hasattr(request.user, 'department') and request.user.department:
+            dept_filter = request.user.department.name
+
+    issues = Issue.objects.filter(
+        status__in=['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'REASSIGNED', 'PENDING_APPROVAL']
+    ).select_related('department', 'citizen', 'assigned_user', 'assigned_employee')
+
+    if dept_filter and dept_filter.upper() != 'ALL':
+        issues = issues.filter(
+            Q(department__name__iexact=dept_filter) | Q(category__iexact=dept_filter)
+        )
+
+    # Serialize and sort by priority_score descending
+    serializer = IssueSerializer(issues, many=True, context={'request': request})
+    sorted_issues = sorted(
+        serializer.data,
+        key=lambda x: x.get('civic_intelligence', {}).get('priority_score', 50),
+        reverse=True
+    )
+    return Response(sorted_issues[:20])
+
+
+# ============================================================================
+# DEMO SEED ENDPOINT (FOR HACKATHON LIVE DEMONSTRATIONS)
+# ============================================================================
+
+@api_view(['POST', 'GET'])
+@permission_classes([AllowAny])
+def seed_demo_view(request):
+    """
+    Populates realistic demo issues and workforce employees for testing the complete Round-2 demo flow.
+    """
+    from .management.commands.seed_round2_demo import seed_demo_data_internal
+    result = seed_demo_data_internal()
+    return Response(result)

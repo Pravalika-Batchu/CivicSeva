@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Modal, Button, Form, Badge, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api/axios";
-import { FaThumbsUp, FaThumbsDown, FaMapMarkerAlt, FaUser, FaClock, FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
+import { FaThumbsUp, FaThumbsDown, FaMapMarkerAlt, FaUser, FaCheckCircle } from "react-icons/fa";
 import "animate.css";
 
 function Reports() {

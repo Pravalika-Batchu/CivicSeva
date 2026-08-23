@@ -1,93 +1,170 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { FaGithub, FaTwitter, FaLinkedin, FaHeart } from 'react-icons/fa';
+import { FaGithub, FaTwitter, FaLinkedin, FaHeart, FaMapMarkerAlt, FaEnvelope, FaPhoneAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
     return (
         <footer style={{
-            background: 'linear-gradient(to right, #1a1a2e, #16213e)',
-            color: '#fff',
-            paddingTop: '3rem',
-            paddingBottom: '1.5rem',
+            background: 'linear-gradient(180deg, #0f172a 0%, #020617 100%)',
+            color: '#cbd5e1',
+            paddingTop: '5rem',
+            paddingBottom: '2rem',
             marginTop: 'auto',
-            borderTop: '1px solid rgba(255,255,255,0.1)'
+            borderTop: '1px solid rgba(255,255,255,0.05)',
+            position: 'relative',
+            overflow: 'hidden'
         }}>
-            <Container>
-                <Row className="g-4">
-                    <Col md={4} className="mb-4 mb-md-0">
-                        <div className="d-flex align-items-center gap-2 mb-3">
-                            <span style={{ fontSize: '1.5rem' }}>🌍</span>
-                            <span className="h4 fw-bold mb-0 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent"
-                                style={{
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent'
-                                }}>
+            {/* Subtle background glow */}
+            <div style={{
+                position: 'absolute',
+                top: '-100px',
+                right: '-100px',
+                width: '300px',
+                height: '300px',
+                background: 'radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%)',
+                zIndex: 0
+            }} />
+
+            <Container style={{ position: 'relative', zIndex: 1 }}>
+                <Row className="gy-5">
+                    <Col lg={4} className="pe-lg-5">
+                        <div className="d-flex align-items-center gap-2 mb-4">
+                            <div style={{
+                                width: '40px',
+                                height: '40px',
+                                background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                                borderRadius: '10px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '1.5rem',
+                                boxShadow: '0 4px 15px rgba(99, 102, 241, 0.3)'
+                            }}>
+                                🌍
+                            </div>
+                            <span className="h3 fw-bold mb-0" style={{
+                                background: 'linear-gradient(135deg, #fff 0%, #94a3b8 100%)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                letterSpacing: '-0.5px'
+                            }}>
                                 CivicSeva
                             </span>
                         </div>
-                        <p className="text-white-50">
-                            Empowering citizens to report issues and track resolutions in real-time.
-                            Building better communities together with AI-driven insights.
+                        <p className="mb-4 lh-lg" style={{ color: '#94a3b8', fontSize: '1.05rem' }}>
+                            Transforming urban governance through citizen empowerment.
+                            Report issues, monitor resolutions, and build a smarter city with AI-powered insights.
                         </p>
-                    </Col>
-
-                    <Col md={2} xs={6}>
-                        <h6 className="fw-bold mb-3 text-uppercase text-white-50" style={{ letterSpacing: '1px' }}>Platform</h6>
-                        <ul className="list-unstyled d-flex flex-column gap-2">
-                            <li><Link to="/" className="text-white-50 text-decoration-none hover-white">Home</Link></li>
-                            <li><Link to="/reports" className="text-white-50 text-decoration-none hover-white">Public Feed</Link></li>
-                            <li><Link to="/issue-map" className="text-white-50 text-decoration-none hover-white">Live Map</Link></li>
-                            <li><Link to="/leaderboard" className="text-white-50 text-decoration-none hover-white">Leaderboard</Link></li>
-                        </ul>
-                    </Col>
-
-                    <Col md={2} xs={6}>
-                        <h6 className="fw-bold mb-3 text-uppercase text-white-50" style={{ letterSpacing: '1px' }}>Resources</h6>
-                        <ul className="list-unstyled d-flex flex-column gap-2">
-                            <li><Link to="/risk-map" className="text-white-50 text-decoration-none hover-white">Risk Analysis</Link></li>
-                            <li><Link to="/register/citizen" className="text-white-50 text-decoration-none hover-white">Join Us</Link></li>
-                            <li><Link to="/login" className="text-white-50 text-decoration-none hover-white">Login</Link></li>
-                        </ul>
-                    </Col>
-
-                    <Col md={4}>
-                        <h6 className="fw-bold mb-3 text-uppercase text-white-50" style={{ letterSpacing: '1px' }}>Stay Connected</h6>
-                        <div className="d-flex gap-3 mb-3">
-                            <a href="#" className="text-white fs-5 hover-scale"><FaGithub /></a>
-                            <a href="#" className="text-white fs-5 hover-scale"><FaTwitter /></a>
-                            <a href="#" className="text-white fs-5 hover-scale"><FaLinkedin /></a>
+                        <div className="d-flex gap-3 mt-4">
+                            <a href="https://github.com/Pravalika-Batchu/CivicSeva" target="_blank" rel="noopener noreferrer" className="social-btn"><FaGithub /></a>
+                            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-btn"><FaTwitter /></a>
+                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-btn"><FaLinkedin /></a>
                         </div>
-                        <div className="p-3 rounded bg-white bg-opacity-10 backdrop-blur-sm">
-                            <p className="mb-0 small text-white-50">
-                                🚀 "Innovation for Public Good"
-                                <br />
-                                Hackathon Edition 2026
-                            </p>
+                    </Col>
+
+                    <Col sm={6} lg={2}>
+                        <h6 className="text-white fw-bold mb-4 text-uppercase small tracking-widest">Platform</h6>
+                        <ul className="list-unstyled footer-links">
+                            <li><Link to="/">Home Dashboard</Link></li>
+                            <li><Link to="/reports">Public Feed</Link></li>
+                            <li><Link to="/issue-map">Interactive Map</Link></li>
+                            <li><Link to="/leaderboard">Leaderboard</Link></li>
+                        </ul>
+                    </Col>
+
+                    <Col sm={6} lg={2}>
+                        <h6 className="text-white fw-bold mb-4 text-uppercase small tracking-widest">Community</h6>
+                        <ul className="list-unstyled footer-links">
+                            <li><Link to="/register/citizen">Become a Citizen</Link></li>
+                            <li><Link to="/register/employee">Employee Portal</Link></li>
+                            <li><Link to="/register/officer">Officer Portal</Link></li>
+                            <li><Link to="/profile">My Contributions</Link></li>
+                        </ul>
+                    </Col>
+
+                    <Col lg={4}>
+                        <h6 className="text-white fw-bold mb-4 text-uppercase small tracking-widest">Get in Touch</h6>
+                        <div className="d-flex flex-column gap-3">
+                            <div className="d-flex align-items-center gap-3 contact-item">
+                                <div className="contact-icon"><FaMapMarkerAlt /></div>
+                                <span>Hyderabad, Telangana</span>
+                            </div>
+                            <div className="d-flex align-items-center gap-3 contact-item">
+                                <div className="contact-icon"><FaEnvelope /></div>
+                                <span>civic@gmail.com</span>
+                            </div>
+                            <div className="d-flex align-items-center gap-3 contact-item">
+                                <div className="contact-icon"><FaPhoneAlt /></div>
+                                <span>+91 83095 95272</span>
+                            </div>
                         </div>
                     </Col>
                 </Row>
 
-                <hr className="my-4 border-secondary" />
+                <div className="footer-bottom-border" />
 
-                <Row className="align-items-center">
+                <Row className="align-items-center py-4">
                     <Col md={6} className="text-center text-md-start mb-3 mb-md-0">
-                        <small className="text-white-50">
-                            &copy; {new Date().getFullYear()} CivicSeva. All rights reserved.
-                        </small>
+                        <p className="mb-0 small" style={{ color: '#64748b' }}>
+                            &copy; {new Date().getFullYear()} CivicSeva. Built for the future of urban excellence.
+                        </p>
                     </Col>
                     <Col md={6} className="text-center text-md-end">
-                        <small className="text-white-50">
-                            Made with <FaHeart className="text-danger mx-1" /> for a Better Future
-                        </small>
+                        <p className="mb-0 small d-flex align-items-center justify-content-center justify-content-md-end gap-1" style={{ color: '#64748b' }}>
+                            Crafted with <FaHeart className="text-danger" /> by <span className="text-white">Team CivicSeva</span>
+                        </p>
                     </Col>
                 </Row>
             </Container>
+
             <style>
                 {`
-                    .hover-white:hover { color: #fff !important; transition: color 0.3s ease; }
-                    .hover-scale:hover { transform: translateY(-3px); transition: transform 0.3s ease; }
+                    .footer-links li { margin-bottom: 0.75rem; }
+                    .footer-links a { 
+                        color: #94a3b8; 
+                        text-decoration: none; 
+                        transition: all 0.2s ease;
+                        font-size: 0.95rem;
+                    }
+                    .footer-links a:hover { 
+                        color: #fff !important; 
+                        padding-left: 5px;
+                    }
+                    .social-btn {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.05);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #94a3b8;
+                        text-decoration: none;
+                        transition: all 0.3s ease;
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                    }
+                    .social-btn:hover {
+                        background: rgba(99, 102, 241, 0.2);
+                        color: #fff;
+                        transform: translateY(-3px);
+                        border-color: #6366f1;
+                    }
+                    .contact-item {
+                        color: #94a3b8;
+                        font-size: 0.95rem;
+                    }
+                    .contact-icon {
+                        color: #6366f1;
+                        font-size: 1.1rem;
+                    }
+                    .footer-bottom-border {
+                        height: 1px;
+                        background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+                        margin-top: 4rem;
+                        margin-bottom: 1rem;
+                    }
+                    .tracking-widest { letter-spacing: 0.15em; }
                 `}
             </style>
         </footer>

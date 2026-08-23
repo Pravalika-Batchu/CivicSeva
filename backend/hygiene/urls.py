@@ -60,11 +60,19 @@ urlpatterns = [
     path('api/nearby-issues/', views.nearby_issues, name='nearby_issues'),
     path('api/public-stats/', views.public_stats, name='public_stats'),
 
-    # path('helpdesk/submit-ticket/', views.submit_helpdesk_ticket, name='submit_helpdesk_ticket'),
-    # path('helpdesk/my-tickets/', views.my_helpdesk_tickets, name='my_helpdesk_tickets'),
-    # path('helpdesk/admin-tickets/', views.admin_helpdesk_tickets, name='admin_helpdesk_tickets'),
-    # path('helpdesk/ticket-comments/<int:ticket_id>/', views.get_helpdesk_comments, name='get_helpdesk_comments'),
-    # path('helpdesk/add-comment/<int:ticket_id>/', views.add_helpdesk_comment, name='add_helpdesk_comment'),
-    # path('helpdesk/update-status/<int:ticket_id>/', views.update_helpdesk_status, name='update_helpdesk_status'),
-    # path('helpdesk/ai-summarize/<int:ticket_id>/', views.ai_summarize_ticket, name='ai_summarize_ticket'),
+    # Feature 4: Department Workforce & Task Allocation
+    path('api/department/employees/', views.get_department_employees, name='get_department_employees'),
+    path('api/issues/<int:issue_id>/assign_employee/', views.assign_employee_view, name='assign_employee_view'),
+    path('api/issues/<int:issue_id>/auto_assign/', views.auto_assign_view, name='auto_assign_view'),
+    path('api/employee/my-tasks/', views.employee_tasks_view, name='employee_tasks_view'),
+
+    # Feature 2: Civic Hotspots & Municipal Analytics
+    path('api/hotspots/', views.get_hotspots_view, name='get_hotspots_view'),
+    path('api/hotspots/analytics/', views.get_hotspot_analytics_view, name='get_hotspot_analytics_view'),
+
+    # Feature 1: Priority Queue ("What Should We Fix First?")
+    path('api/priorities/top/', views.get_top_priorities_view, name='get_top_priorities_view'),
+
+    # Round-2 Demo Dataset Seed Endpoint
+    path('api/demo/seed/', views.seed_demo_view, name='seed_demo_view'),
 ]

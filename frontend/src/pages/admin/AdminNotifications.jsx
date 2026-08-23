@@ -13,13 +13,11 @@ function AdminNotifications() {
         setError(null);
         try {
             const accessToken = localStorage.getItem("access");
-            const [issuesRes, requestsRes, deptNotifsRes] = await Promise.all([
-                api.get("/api/issues/", { headers: { Authorization: `Bearer ${accessToken}` } }),
+            const [requestsRes, deptNotifsRes] = await Promise.all([
                 api.get("/api/solve-requests/pending/", { headers: { Authorization: `Bearer ${accessToken}` } }),
                 api.get("/api/department-notifications/", { headers: { Authorization: `Bearer ${accessToken}` } })
             ]);
 
-            const issues = issuesRes.data;
             const requests = requestsRes.data;
             const deptNotifs = deptNotifsRes.data;
 
