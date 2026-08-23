@@ -151,12 +151,8 @@ cd CivicSeva
 docker compose up -d --build
 ```
 
-### 3. Seed demo data (Optional but recommended)
-```bash
-docker compose exec backend python manage.py seed_round2_demo
-```
 
-### 4. Access the applications
+### 3. Access the applications
 * **Frontend Web App:** [http://localhost:3000](http://localhost:3000)
 * **Backend REST API:** [http://localhost:8000/api/](http://localhost:8000/api/)
 * **Django Admin:** [http://localhost:8000/admin/](http://localhost:8000/admin/)
